@@ -2,10 +2,8 @@ package com.tiendaonline.clientes.model;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.validator.constraints.UUID; //Cualquier error, cambiar a java.util.UUID
-
-import com.google.type.DateTime;
-
+//import org.hibernate.validator.constraints.UUID; //Cualquier error, cambiar a java.util.UUID
+import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data //getters, setters, toString, equals, hashCode.
 @AllArgsConstructor //constructor con todos los atributos
 @NoArgsConstructor //constructor sin atributos.
-@Entity //es unatabla de la bdd
+@Entity //es una tabla de la bdd
 @Table(name = "clientes")
 public class Cliente {
     

@@ -2,7 +2,7 @@ package com.tiendaonline.clientes.model;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.validator.constraints.UUID;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
