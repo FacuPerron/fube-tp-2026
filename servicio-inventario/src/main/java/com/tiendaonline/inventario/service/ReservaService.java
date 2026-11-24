@@ -1,6 +1,7 @@
 package com.tiendaonline.inventario.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,4 +72,12 @@ public class ReservaService {
 
         return true;
     }
+
+    public List<ReservaDTOResponse> obtenerReservasActivasPorPedido(UUID idPedido) {
+
+        List<Reserva> reservas = reservaRepository.findByIdPedidoAndEstado(idPedido, EstadoReserva.ACTIVA);
+
+        return reservas.stream().map(reserva -> new ReservaDTOResponse(reserva.getIdReserva(),reserva.getIdProducto(),reserva.getIdPedido(),
+                                    reserva.getCantidad(),reserva.getEstado(),reserva.getFechaCreacion())).toList();
+}
 }

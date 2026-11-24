@@ -1,6 +1,7 @@
 package com.tiendaonline.inventario.controller;
 
 import java.io.ObjectInputFilter.Status;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,9 @@ import com.tiendaonline.inventario.model.ReservaDTOResponse;
 import com.tiendaonline.inventario.service.ProductoService;
 import com.tiendaonline.inventario.service.ReservaService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import jakarta.validation.Valid;
 
 @RestController 
@@ -29,13 +32,13 @@ public class ProductoController {
     //Consultar disponibilidad de producto por su ID.
     @GetMapping("/productos/{id}/disponibilidad")
     public ResponseEntity<Integer> consultarStockDisponible(@PathVariable UUID id) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(productoService.consultarStockDisponible(id));
+        return ResponseEntity.status(HttpStatus.OK).body(productoService.consultarStockDisponible(id));
     }
 
     //Consultar producto
     @GetMapping("/productos/{id}")
     public ResponseEntity<ProductoDTOResponse> consultarProducto(@PathVariable UUID id) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(productoService.consultarProducto(id));
+        return ResponseEntity.status(HttpStatus.OK).body(productoService.consultarProducto(id));
     }
 
     //Reservar unidades de stock para un pedido.
@@ -45,9 +48,15 @@ public class ProductoController {
     }
 
     //Liberar una reserva existente.
-    @PostMapping("/reservas/{id}/liberar")
+    @PostMapping("/reservas/{id}/liberacion")
     public ResponseEntity<Void> liberarReserva(@PathVariable UUID id) {
         reservaService.liberarReserva(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //Consultar reservas activas de un pedido.
+    @GetMapping("/reservas")
+    public ResponseEntity<List<ReservaDTOResponse>> obtenerReservasPorPedido(@RequestParam UUID idPedido) {
+        return ResponseEntity.status(HttpStatus.OK).body(reservaService.obtenerReservasActivasPorPedido(idPedido));
     }
 }

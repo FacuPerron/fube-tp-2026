@@ -10,12 +10,14 @@ import com.tiendaonline.clientes.model.ClienteDTORequest;
 import com.tiendaonline.clientes.model.ClienteDTOResponse;
 import com.tiendaonline.clientes.repository.ClienteRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service 
 public class ClienteService {
     ClienteRepository clienteRepository; //invocamos al repositorio para registrar un cliente.
     
     //Me va a llegar un clienteRequestDTO y lo voy a transformar en un cliente (q es la entidad) para poder guardarlo en la base de datos.
-
+    @Transactional
     public ClienteDTOResponse registrarCliente(ClienteDTORequest clienteDTO){
         //Creo un cliente a partir del clienteDTORequest que me llega, para guardarlo en la base de datos.
         
@@ -25,7 +27,7 @@ public class ClienteService {
             throw new IllegalArgumentException("El nombre y el email son obligatorios");
         }
 
-        //Antes de crear y guardar, verifico si el email ya está registrado en la base de datos, si es así lanzo laexcepción.
+        //Antes de crear y guardar, verifico si el email ya está registrado en la base de datos, si es así lanzo la excepción.
         if(clienteRepository.existsByEmail(clienteDTO.getEmail())) {
             throw new IllegalArgumentException("El email ya está registrado");
         }

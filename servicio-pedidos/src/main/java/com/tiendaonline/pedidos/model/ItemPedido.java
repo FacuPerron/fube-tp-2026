@@ -1,5 +1,20 @@
 package com.tiendaonline.pedidos.model;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
+
+import jakarta.persistence.Id;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +37,5 @@ public class ItemPedido {
     private Integer cantidad;
 
     @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 2)
-    private Double precioUnitario;
+    private BigDecimal precioUnitario;
 }
