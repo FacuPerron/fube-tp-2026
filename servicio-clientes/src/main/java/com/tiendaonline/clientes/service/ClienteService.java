@@ -22,6 +22,7 @@ public class ClienteService {
 
     private final ClienteRepository clienteRepository; //invocamos al repositorio para registrar un cliente.
     private final PedidoClient pedidoClient;
+    private final FeatureFlagService featureFlagService;
 
     //Me va a llegar un clienteRequestDTO y lo voy a transformar en un cliente (q es la entidad) para poder guardarlo en la base de datos.
     @Transactional
@@ -58,20 +59,6 @@ public class ClienteService {
         return clienteResponse;
     }
 
-    public ClienteDTOResponse obtenerClientePorId(UUID idCliente) {
-        //Busco el cliente en la base de datos por su ID, si no lo encuentra se lanza una excepción.
-        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new NoSuchElementException("Cliente no encontrado con ID: " + idCliente));
-
-        //Creo la response para devolverla en la respuesta de la API.
-        ClienteDTOResponse clienteResponse = new ClienteDTOResponse();
-        clienteResponse.setIdCliente(cliente.getIdCliente());
-        clienteResponse.setNombre(cliente.getNombre());
-        clienteResponse.setEmail(cliente.getEmail());
-        clienteResponse.setFechaAlta(cliente.getFechaAlta());
-
-        return clienteResponse;
-    }
-
     // Retornar los pedidos de un cliente determinado, que devuelve el listado de pedidos de un cliente consultando de forma síncrona a servicio-pedidos.
     public List<PedidoResponse> obtenerPedidosPorCliente(UUID idCliente) {
         
@@ -82,4 +69,59 @@ public class ClienteService {
         return pedidoClient.obtenerPedidosPorCliente(idCliente);
     }
     
+
+    public ClienteDTOResponse obtenerClientePorId(UUID idCliente) {
+        //Busco el cliente en la base de datos por su ID, si no lo encuentra se lanza una excepción.
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new NoSuchElementException("Cliente no encontrado con ID: " + idCliente));
+
+        String nombre = cliente.getNombre();
+        String email = cliente.getEmail();
+
+        //Si la flag esta activa, procedo a enmascarar el nombre y el email.
+        if(featureFlagService.isMaskPiiActivo(idCliente.toString())){
+            nombre = this.enmascararNombre(nombre);
+            email = this.enmascararEmail(email);
+        }
+
+
+        //Creo la response para devolverla en la respuesta de la API.
+        ClienteDTOResponse clienteResponse = new ClienteDTOResponse();
+        clienteResponse.setIdCliente(cliente.getIdCliente());
+        clienteResponse.setNombre(nombre);
+        clienteResponse.setEmail(email);
+        clienteResponse.setFechaAlta(cliente.getFechaAlta());
+
+        return clienteResponse;
+    }
+
+    //Enmascaramos el nombre dejando solo la primera letra de cada palabra.
+    private String enmascararNombre(String nombre) {
+        
+        if (nombre == null || nombre.isBlank()) {
+            return "";
+        }
+
+        String[] palabras = nombre.trim().split(" ");
+        String nombreEnmascarado = "";
+
+        for (String palabra : palabras) {
+            if (!palabra.isEmpty()) {
+                nombreEnmascarado += palabra.charAt(0) + "*** ";
+            }
+        }
+        //Le sacamos el último espacio que sobra al final.
+        return nombreEnmascarado.trim();
+        
+    }
+
+
+    //Enmascaramos el email dejando solo la extensión final.
+    private String enmascararEmail(String email) {
+        int posPunto = email.lastIndexOf(".");
+        if (posPunto == -1) {
+            return "****@****";
+        }
+        //Devuelvo el ****@**** concatenado con lo que hay a la derecha del . (.com)
+        return "****@****" + email.substring(posPunto);
+    }
 }

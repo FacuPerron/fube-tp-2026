@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,8 @@ public class ClienteServiceTest {
     private ClienteRepository clienteRepository;
     @Mock
     private PedidoClient pedidoClient;
+    @Mock
+    private FeatureFlagService featureFlagService;
 
     @InjectMocks 
     private ClienteService clienteService;
@@ -271,6 +274,70 @@ public class ClienteServiceTest {
         verify(clienteRepository, times(1)).existsById(idCliente);
         verify(pedidoClient, times(0)).obtenerPedidosPorCliente(any());
     }
+
+
+    @Test
+    void obtenerClientePorId_CuandoFlagMaskPiiEstaActiva_DeberiaDevolverDatosEnmascarados() {
+        //Test para verificar que si la flag mask-pii está activa, se devuelven el nombre y email con asteriscos.
+
+        UUID idCliente = UUID.randomUUID();
+        LocalDateTime fechaAlta = LocalDateTime.now();
+
+        Cliente clienteEnBDD = new Cliente();
+        clienteEnBDD.setIdCliente(idCliente);
+        clienteEnBDD.setNombre("Juan Perez");
+        clienteEnBDD.setEmail("juan.perez@example.com");
+        clienteEnBDD.setFechaAlta(fechaAlta);
+
+        //Simulamos que el cliente existe en la BD y que FeatureFlagService devuelve true para la flag.
+        when(clienteRepository.findById(idCliente)).thenReturn(Optional.of(clienteEnBDD));
+        when(featureFlagService.isMaskPiiActivo(idCliente.toString())).thenReturn(true);
+
+        //Ejecutamos el método a probar.
+        ClienteDTOResponse clienteResponse = clienteService.obtenerClientePorId(idCliente);
+
+        //Verificamos que el nombre y el email vengan enmascarados con asteriscos.
+        assertNotNull(clienteResponse);
+        assertEquals(idCliente, clienteResponse.getIdCliente());
+        assertEquals("J*** P***", clienteResponse.getNombre());
+        assertEquals("****@****.com", clienteResponse.getEmail());
+        assertEquals(fechaAlta, clienteResponse.getFechaAlta());
+
+        verify(clienteRepository, times(1)).findById(idCliente);
+        verify(featureFlagService, times(1)).isMaskPiiActivo(idCliente.toString());
+    }
+
+    @Test
+    void obtenerClientePorId_CuandoFlagMaskPiiEstaInactiva_DeberiaDevolverDatosNormales() {
+        //Test para verificar que si la flag mask-pii está inactiva, se devuelven los datos reales sin enmascarar.
+
+        UUID idCliente = UUID.randomUUID();
+        LocalDateTime fechaAlta = LocalDateTime.now();
+
+        Cliente clienteEnBDD = new Cliente();
+        clienteEnBDD.setIdCliente(idCliente);
+        clienteEnBDD.setNombre("Juan Perez");
+        clienteEnBDD.setEmail("juan.perez@example.com");
+        clienteEnBDD.setFechaAlta(fechaAlta);
+
+        //Simulamos que el cliente existe en la BD y que FeatureFlagService devuelve false para la flag.
+        when(clienteRepository.findById(idCliente)).thenReturn(Optional.of(clienteEnBDD));
+        when(featureFlagService.isMaskPiiActivo(idCliente.toString())).thenReturn(false);
+
+        //Ejecutamos el método a probar.
+        ClienteDTOResponse clienteResponse = clienteService.obtenerClientePorId(idCliente);
+
+        //Verificamos que los datos se devuelvan normales, sin asteriscos.
+        assertNotNull(clienteResponse);
+        assertEquals(idCliente, clienteResponse.getIdCliente());
+        assertEquals("Juan Perez", clienteResponse.getNombre());
+        assertEquals("juan.perez@example.com", clienteResponse.getEmail());
+        assertEquals(fechaAlta, clienteResponse.getFechaAlta());
+
+        verify(clienteRepository, times(1)).findById(idCliente);
+        verify(featureFlagService, times(1)).isMaskPiiActivo(idCliente.toString());
+    }
+
 
 
 }

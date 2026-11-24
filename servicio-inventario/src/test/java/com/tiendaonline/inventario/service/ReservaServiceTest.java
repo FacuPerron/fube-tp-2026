@@ -83,10 +83,9 @@ public class ReservaServiceTest {
     void liberarReserva_CuandoNoExisteReserva_DeberiaLanzarExcepcion() {
         //Test para verificar que el método liberarReserva lanza una excepción si la reserva no existe en la base de datos.
 
-        UUID idProducto = UUID.randomUUID();
+        UUID.randomUUID();
         UUID idReserva = UUID.randomUUID();
-        Integer cantidadAReservar = 5;
-
+        
         //Simulamos que el repo de reservas nos dice que no encontró la reserva con ese ID.
         when(reservaRepository.findById(idReserva)).thenReturn(java.util.Optional.empty());
 
