@@ -14,12 +14,14 @@ import com.tiendaonline.clientes.model.ClienteDTOResponse;
 import com.tiendaonline.clientes.repository.ClienteRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service 
+@RequiredArgsConstructor 
 public class ClienteService {
 
-    ClienteRepository clienteRepository; //invocamos al repositorio para registrar un cliente.
-    PedidoClient pedidoClient;
+    private final ClienteRepository clienteRepository; //invocamos al repositorio para registrar un cliente.
+    private final PedidoClient pedidoClient;
 
     //Me va a llegar un clienteRequestDTO y lo voy a transformar en un cliente (q es la entidad) para poder guardarlo en la base de datos.
     @Transactional

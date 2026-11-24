@@ -3,9 +3,9 @@ package com.tiendaonline.inventario.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tiendaonline.inventario.model.Producto;
@@ -14,12 +14,17 @@ import com.tiendaonline.inventario.model.ReservaDTORequest;
 import com.tiendaonline.inventario.model.ReservaDTOResponse;
 import com.tiendaonline.inventario.model.enume.EstadoReserva;
 import com.tiendaonline.inventario.repository.ReservaRepository;
+
+import lombok.RequiredArgsConstructor;
+
 import com.tiendaonline.inventario.repository.ProductoRepository;
 
+@Service
+@RequiredArgsConstructor 
 public class ReservaService {
 
-    ReservaRepository reservaRepository;
-    ProductoRepository productoRepository;
+    private final ReservaRepository reservaRepository;
+    private final ProductoRepository productoRepository;
 
     @Transactional 
     //Metodo para reservar unidades de stock para un pedido.
@@ -52,6 +57,7 @@ public class ReservaService {
                                         reserva.getEstado(),reserva.getFechaCreacion());
     }
 
+    @Transactional
     //Metodo para liberar una reserva existente.
     public Boolean liberarReserva(UUID idReserva){
 

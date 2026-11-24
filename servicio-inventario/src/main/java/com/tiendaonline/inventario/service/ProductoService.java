@@ -3,14 +3,20 @@ package com.tiendaonline.inventario.service;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.tiendaonline.inventario.model.Producto;
 import com.tiendaonline.inventario.model.ProductoDTORequest;
 import com.tiendaonline.inventario.model.ProductoDTOResponse;
 import com.tiendaonline.inventario.repository.ProductoRepository;
 
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor 
 public class ProductoService {
 
-    ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
     /* InventarioService debe:
     - Registrar un nuevo producto en el inventario. Listo.
     - Reservar unidades de stock para un pedido, rechazando la operación si no hay stock suficiente. 

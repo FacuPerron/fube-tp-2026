@@ -21,7 +21,5 @@ spring:
 servicios:
   clientes:
     url: http://localhost:8081
-
-servicios:
   inventario:
     url: http://localhost:8082
