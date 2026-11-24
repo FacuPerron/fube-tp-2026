@@ -1,10 +1,13 @@
 package com.tiendaonline.clientes.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
+import com.tiendaonline.clientes.client.PedidoClient;
+import com.tiendaonline.clientes.client.PedidoClient.PedidoResponse;
 import com.tiendaonline.clientes.model.Cliente;
 import com.tiendaonline.clientes.model.ClienteDTORequest;
 import com.tiendaonline.clientes.model.ClienteDTOResponse;
@@ -14,8 +17,10 @@ import jakarta.transaction.Transactional;
 
 @Service 
 public class ClienteService {
+
     ClienteRepository clienteRepository; //invocamos al repositorio para registrar un cliente.
-    
+    PedidoClient pedidoClient;
+
     //Me va a llegar un clienteRequestDTO y lo voy a transformar en un cliente (q es la entidad) para poder guardarlo en la base de datos.
     @Transactional
     public ClienteDTOResponse registrarCliente(ClienteDTORequest clienteDTO){
@@ -66,9 +71,13 @@ public class ClienteService {
     }
 
     // Retornar los pedidos de un cliente determinado, que devuelve el listado de pedidos de un cliente consultando de forma síncrona a servicio-pedidos.
-    /*public List<Pedido> obtenerPedidosPorCliente(UUID idCliente) {
-        // Implementación para obtener los pedidos del cliente
-        return null;
+    public List<PedidoResponse> obtenerPedidosPorCliente(UUID idCliente) {
+        
+        if(!clienteRepository.existsById(idCliente)){
+            throw new NoSuchElementException("Cliente no encontrado con ID: " + idCliente);
+        }
+        
+        return pedidoClient.obtenerPedidosPorCliente(idCliente);
     }
-    */
+    
 }

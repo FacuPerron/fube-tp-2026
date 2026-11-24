@@ -1,6 +1,5 @@
 package com.tiendaonline.inventario.controller;
 
-import java.io.ObjectInputFilter.Status;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,13 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController 
-
+@RequiredArgsConstructor 
 public class ProductoController {
 
-    ReservaService reservaService;
-    ProductoService productoService;
+    private final ReservaService reservaService;
+    private final ProductoService productoService;
 
     //Consultar disponibilidad de producto por su ID.
     @GetMapping("/productos/{id}/disponibilidad")
