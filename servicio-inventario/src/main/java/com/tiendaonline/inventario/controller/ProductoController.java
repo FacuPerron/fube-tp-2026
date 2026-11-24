@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tiendaonline.inventario.model.ProductoDTORequest;
 import com.tiendaonline.inventario.model.ProductoDTOResponse;
 import com.tiendaonline.inventario.model.ReservaDTORequest;
 import com.tiendaonline.inventario.model.ReservaDTOResponse;
@@ -28,6 +29,12 @@ public class ProductoController {
 
     private final ReservaService reservaService;
     private final ProductoService productoService;
+
+    //Creamos un pedido.
+    @PostMapping("/productos")
+    public ResponseEntity<ProductoDTOResponse> registrarProducto(@Valid @RequestBody ProductoDTORequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoService.registrarProducto(request));
+    }
 
     //Consultar disponibilidad de producto por su ID.
     @GetMapping("/productos/{id}/disponibilidad")

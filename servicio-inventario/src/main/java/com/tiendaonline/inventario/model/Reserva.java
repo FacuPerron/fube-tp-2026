@@ -7,6 +7,8 @@ import com.tiendaonline.inventario.model.enume.EstadoReserva;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,6 +39,7 @@ public class Reserva {
     private Integer cantidad;
 
     @Column(name = "estado", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
     private EstadoReserva estado;
 
     @Column(name = "fecha_creacion", nullable = false)
