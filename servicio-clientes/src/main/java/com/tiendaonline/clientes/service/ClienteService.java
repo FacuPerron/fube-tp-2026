@@ -13,11 +13,15 @@ import com.tiendaonline.clientes.model.ClienteDTORequest;
 import com.tiendaonline.clientes.model.ClienteDTOResponse;
 import com.tiendaonline.clientes.repository.ClienteRepository;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service 
 @RequiredArgsConstructor 
+@Slf4j
 public class ClienteService {
 
     private final ClienteRepository clienteRepository; //invocamos al repositorio para registrar un cliente.
@@ -48,6 +52,7 @@ public class ClienteService {
 
         //Guardamos el cliente en la base de datos y nos devuelve el cliente con el ID generado.
         cliente = clienteRepository.save(cliente); 
+        log.info("Cliente registrado {}", kv("clienteId", cliente.getIdCliente()));
 
         //Creamos la response para devolverla en la respuesta de la API.
         ClienteDTOResponse clienteResponse = new ClienteDTOResponse(); 
@@ -66,13 +71,17 @@ public class ClienteService {
             throw new NoSuchElementException("Cliente no encontrado con ID: " + idCliente);
         }
         
+        log.info("Consultando pedidos del cliente {}", kv("clienteId", idCliente));
         return pedidoClient.obtenerPedidosPorCliente(idCliente);
     }
     
 
     public ClienteDTOResponse obtenerClientePorId(UUID idCliente) {
         //Busco el cliente en la base de datos por su ID, si no lo encuentra se lanza una excepción.
-        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new NoSuchElementException("Cliente no encontrado con ID: " + idCliente));
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> {
+            log.warn("Cliente no encontrado {}", kv("clienteId", idCliente));
+            return new NoSuchElementException("Cliente no encontrado con ID: " + idCliente);
+        });
 
         String nombre = cliente.getNombre();
         String email = cliente.getEmail();

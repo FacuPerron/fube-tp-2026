@@ -14,8 +14,8 @@ public class ClienteClient {
 
     //Inicializamos la conexión con servicio-clientes.
     //Configuto el RestClient con la dirección a la que vamos a apuntar.
-    public ClienteClient(@Value("${servicios.clientes.url}") String baseUrl){
-        this.restClient = RestClient.create(baseUrl);
+    public ClienteClient(RestClient.Builder restClientBuilder, @Value("${servicios.clientes.url}") String baseUrl) {
+        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
 
     //Uso el restClient para mandar la petición Http hacia servicio-clientes

@@ -10,10 +10,14 @@ import com.tiendaonline.inventario.model.ProductoDTORequest;
 import com.tiendaonline.inventario.model.ProductoDTOResponse;
 import com.tiendaonline.inventario.repository.ProductoRepository;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor 
+@Slf4j
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
@@ -43,6 +47,7 @@ public class ProductoService {
 
         //Guardamos el producto en la base de datos
         producto = productoRepository.save(producto);
+        log.info("Producto registrado {}", kv("productoId", producto.getIdProducto()));
 
         //Creamos la response para devolverla en la respuesta de la API.
         ProductoDTOResponse productoResponse = new ProductoDTOResponse();
@@ -94,6 +99,7 @@ public class ProductoService {
 
         //Guardamos los cambios en la base de datos.
         productoRepository.save(producto);
+        log.info("Stock actualizado {} {}", kv("productoId", idProducto), kv("cantidad", nuevaCantidad));
 
         return new ProductoDTOResponse(idProducto, producto.getNombre(), producto.getSku(), producto.getCantidadDisponible());
     }

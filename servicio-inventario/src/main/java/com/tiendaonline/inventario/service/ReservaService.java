@@ -15,12 +15,16 @@ import com.tiendaonline.inventario.model.ReservaDTOResponse;
 import com.tiendaonline.inventario.model.enume.EstadoReserva;
 import com.tiendaonline.inventario.repository.ReservaRepository;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import com.tiendaonline.inventario.repository.ProductoRepository;
 
 @Service
 @RequiredArgsConstructor 
+@Slf4j
 public class ReservaService {
 
     private final ReservaRepository reservaRepository;
@@ -36,6 +40,7 @@ public class ReservaService {
         Integer cantidadDisponible = producto.getCantidadDisponible();
         
         if(cantidadDisponible < request.getCantidad()) {
+            log.warn("Stock insuficiente para reservar {}", kv("productoId", request.getIdProducto()));
             throw new IllegalArgumentException("No hay stock suficiente para reservar");
         }
 
@@ -51,6 +56,8 @@ public class ReservaService {
         //Actualizamos la cantidad disponible del producto.
         producto.setCantidadDisponible(cantidadDisponible - request.getCantidad());
         productoRepository.save(producto);
+
+        log.info("Stock reservado {} {}", kv("reservaId", reserva.getIdReserva()), kv("pedidoId", reserva.getIdPedido()));
         
         return new ReservaDTOResponse(reserva.getIdReserva(),reserva.getIdProducto(),
                                         reserva.getIdPedido(),reserva.getCantidad(), 
@@ -75,6 +82,8 @@ public class ReservaService {
 
         productoRepository.save(producto);
         reservaRepository.save(reserva);
+
+        log.info("Reserva liberada {}", kv("reservaId", reserva.getIdReserva()));
 
         return true;
     }

@@ -21,11 +21,15 @@ import com.tiendaonline.pedidos.model.PedidoDTOResponse;
 import com.tiendaonline.pedidos.repository.ItemPedidoRepository;
 import com.tiendaonline.pedidos.repository.PedidoRepository;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor 
+@Slf4j
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
@@ -63,6 +67,7 @@ public class PedidoService {
                 montoTotal = montoTotal.add(subtotal);
             }
         }catch(RuntimeException ex) {
+            log.warn("Falló reserva de stock, liberando reservas previas {}", kv("pedidoId", idPedido));
             for(UUID idReservaPrevia : reservasConfirmadas){
                 inventarioClient.liberarReserva(idReservaPrevia);
             }
@@ -79,6 +84,8 @@ public class PedidoService {
 
         pedido = pedidoRepository.save(pedido);
         itemsAGuardar = itemPedidoRepository.saveAll(itemsAGuardar);
+
+        log.info("Pedido creado {} {}", kv("pedidoId", pedido.getIdPedido()), kv("clienteId", pedido.getIdCliente()));
 
         return this.mapearAResponse(pedido, itemsAGuardar);
         
@@ -100,6 +107,8 @@ public class PedidoService {
 
         pedido = pedidoRepository.save(pedido);
         List<ItemPedido> items = itemPedidoRepository.findByIdPedido(id);
+
+        log.info("Pedido cancelado {}", kv("pedidoId", pedido.getIdPedido()));
 
         return mapearAResponse(pedido, items);
     }

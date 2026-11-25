@@ -23,3 +23,8 @@ servicios:
     url: http://localhost:8081
   inventario:
     url: http://localhost:8082
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0

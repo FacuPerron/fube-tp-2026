@@ -11,8 +11,8 @@ import org.springframework.web.client.RestClient;
 public class InventarioClient {
     private final RestClient restClient;
 
-    public InventarioClient(@Value("${servicios.inventario.url}") String baseUrl){
-        this.restClient = RestClient.create(baseUrl);
+    public InventarioClient(RestClient.Builder restClientBuilder, @Value("${servicios.inventario.url}") String baseUrl) {
+        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
     
     public UUID reservarStock(UUID idProducto, UUID idPedido, Integer cantidad){

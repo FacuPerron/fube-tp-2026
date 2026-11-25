@@ -10,13 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-
 @Component
 public class PedidoClient {
     private final RestClient restClient;
 
-    public PedidoClient(@Value("${servicios.pedidos.url}")String baseUrl){
-        this.restClient = RestClient.create(baseUrl);
+    public PedidoClient(RestClient.Builder restClientBuilder, @Value("${servicios.pedidos.url}") String baseUrl) {
+        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
 
     public List<PedidoResponse> obtenerPedidosPorCliente(UUID idCliente) {
