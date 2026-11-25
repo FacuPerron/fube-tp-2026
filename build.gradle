@@ -21,6 +21,15 @@ subprojects {
         mavenCentral()
     }
 
+    dependencies {
+        //Salud y observabilidad
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        // Tracing
+        implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+        // Logs estructurados en JSON
+        implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+    }
+
     tasks.named('test') {
         useJUnitPlatform()
         systemProperty 'user.timezone', 'America/Argentina/Buenos_Aires'

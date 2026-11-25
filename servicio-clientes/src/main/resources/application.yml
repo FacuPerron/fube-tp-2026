@@ -15,3 +15,15 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+servicios:
+  pedidos:
+    url: http://localhost:8083
+
+statsig:
+  secret-key: ${STATSIG_SECRET_KEY:secret-wHtn6G1dt00Z7S6FAwx1m9b6gU9ps5LUEnZkrKQpNkB}
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0

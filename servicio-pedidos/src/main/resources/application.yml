@@ -18,3 +18,15 @@ spring:
   batch:
     job:
       enabled: false
+    jdbc:
+      initialize-schema: always
+servicios:
+  clientes:
+    url: http://localhost:8081
+  inventario:
+    url: http://localhost:8082
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
